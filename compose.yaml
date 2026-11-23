@@ -17,12 +17,12 @@ services:
       SERVER_SSL_ENABLED: "false"
       DB_URL: jdbc:postgresql://postgres:5432/ppdk_learning_dev
       DB_USER: ppdk_dev
-      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
-      PPDK_HTTP_ORIGIN: ${PPDK_SITE:?Set PPDK_SITE in .env}
+      DB_PASSWORD: ${DB_PASSWORD:-341-ppdK}
+      PPDK_HTTP_ORIGIN: ${PPDK_SITE:-https://localhost}
       PPDK_SEED_IDENTITY: "true"
       PPDK_SEED_CONTENT: "true"
-      PPDK_DEMO_PASSWORD_A: ${PPDK_DEMO_PASSWORD_A:?Set PPDK_DEMO_PASSWORD_A in .env}
-      PPDK_DEMO_PASSWORD_B: ${PPDK_DEMO_PASSWORD_B:?Set PPDK_DEMO_PASSWORD_B in .env}
+      PPDK_DEMO_PASSWORD_A: ${PPDK_DEMO_PASSWORD_A:-341-ppdK}
+      PPDK_DEMO_PASSWORD_B: ${PPDK_DEMO_PASSWORD_B:-341-ppdK}
       LOGGING_LEVEL_EDU_USM_PPDK: INFO
     volumes:
       - ./backend/runtime/app.jar:/opt/ppdk/app.jar:ro
@@ -35,8 +35,9 @@ services:
       - backend
     command: ["flock", "-n", "/state/seed.lock", "node", "/init/seed.mjs"]
     environment:
-      PPDK_SITE: ${PPDK_SITE:?Set PPDK_SITE in .env}
-      PPDK_DEMO_PASSWORD_A: ${PPDK_DEMO_PASSWORD_A:?Set PPDK_DEMO_PASSWORD_A in .env}
+      PPDK_SITE: ${PPDK_SITE:-https://localhost}
+      PPDK_DEMO_PASSWORD_A: ${PPDK_DEMO_PASSWORD_A:-341-ppdK}
+      PPDK_DEMO_PASSWORD_B: ${PPDK_DEMO_PASSWORD_B:-341-ppdK}
     volumes:
       - ./demo-init:/init:ro
       - demo-state:/state
@@ -49,10 +50,10 @@ services:
     depends_on:
       - backend
     environment:
-      PPDK_SITE: ${PPDK_SITE:?Set PPDK_SITE in .env}
+      PPDK_SITE: ${PPDK_SITE:-https://localhost}
     ports:
-      - "${PPDK_BIND_ADDRESS:-0.0.0.0}:${PPDK_HTTP_PORT:-80}:80"
-      - "${PPDK_BIND_ADDRESS:-0.0.0.0}:${PPDK_HTTPS_PORT:-443}:${PPDK_HTTPS_PORT:-443}"
+      - "${PPDK_BIND_ADDRESS:-127.0.0.1}:${PPDK_HTTP_PORT:-80}:80"
+      - "${PPDK_BIND_ADDRESS:-127.0.0.1}:${PPDK_HTTPS_PORT:-443}:${PPDK_HTTPS_PORT:-443}"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./frontend/site:/srv/ppdk:ro
