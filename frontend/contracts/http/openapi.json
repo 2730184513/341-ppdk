@@ -1,0 +1,4610 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "PPDK Learning – Design Contract",
+    "version": "1.2.0-proposed",
+    "description": "Backend P0 proposed implementation contract. 21 operations preserved from course v1.1; no implementation or human acceptance implied. See docs/requirements/backend-scope.md and this change design.md."
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "Same-origin HTTPS; relative server, no real deployed endpoint."
+    }
+  ],
+  "tags": [
+    {
+      "name": "Identity"
+    },
+    {
+      "name": "Curriculum"
+    },
+    {
+      "name": "Learning"
+    },
+    {
+      "name": "Reporting"
+    }
+  ],
+  "paths": {
+    "/auth/csrf": {
+      "get": {
+        "operationId": "readCsrf",
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Issue/read synchronizer CSRF token",
+        "description": "May create an anonymous session Cookie. Re-fetch after login, logout or privilege downgrade. No token in local storage.\nMay create anonymous database session. Returns raw CSRF token; Cache-Control:no-store.",
+        "x-roles": [],
+        "responses": {
+          "200": {
+            "description": "Issue/read synchronizer CSRF token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Csrf"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/auth/session": {
+      "get": {
+        "operationId": "readSession",
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Read current principal mode",
+        "description": "No session means ANONYMOUS. Resolves lost activation responses; does not expose teacher roster.\nReads current persisted principal; an expired/missing/revoked cookie returns ANONYMOUS. Does not disclose historical teacher identity in learner mode.",
+        "x-roles": [],
+        "responses": {
+          "200": {
+            "description": "Read current principal mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionView"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "login",
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Authenticate and rotate session credential",
+        "description": "Requires anonymous/current CSRF. Replaces old credential; generic invalid-credential response. Teacher re-entry is online only.\nRequires CSRF even anonymous. Successful credential upgrade rotates opaque cookie and CSRF; does not close the old ACTIVE context. Invalid credentials use generic 401; rate-limit 429. LEARNER sessions receive ROLE_FORBIDDEN without revocation; use the known Context teacher-session endpoint.",
+        "x-roles": [],
+        "responses": {
+          "200": {
+            "description": "Authenticate and rotate session credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionView"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds transport cap",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structurally valid JSON with invalid request fields",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Invalidate current online session",
+        "description": "Does not automatically delete any offline pending data. UI warns before leaving.\nRevoke persisted session and expire cookie. Does not close learning context or delete pending data. Requires live session and CSRF.",
+        "x-roles": [
+          "TEACHER",
+          "LEARNER"
+        ],
+        "responses": {
+          "204": {
+            "description": "Invalidate current online session",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds transport cap",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structurally valid JSON with invalid request fields",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/students": {
+      "get": {
+        "operationId": "listStudents",
+        "tags": [
+          "Identity"
+        ],
+        "summary": "List owned students",
+        "description": "List owned students\nSee per-operation behavior in docs/domain/use-cases.md and OpenSpec capability specs. Stable order: students createdAt DESC,id DESC; attempts endedAt DESC,attemptId DESC; pagination is live, not a cross-page snapshot.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "List owned students",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentPage"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid pagination or filter",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "name": "includeArchived",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "false: active students only; true: all owned including archived. Literal true/false only."
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      },
+      "post": {
+        "operationId": "createStudent",
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Create simulated student",
+        "description": "Create simulated student\nSee per-operation behavior in docs/domain/use-cases.md and OpenSpec capability specs. Alias uses Unicode code point length after trim. avatarKey is AVATAR_1/AVATAR_2.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "201": {
+            "description": "Create simulated student",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Student"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Quoted current version."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid content/evidence",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds transport cap",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentCreate"
+              }
+            }
+          }
+        },
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/students/{studentId}": {
+      "get": {
+        "operationId": "readStudent",
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Read owned student",
+        "description": "Read owned student\nSee per-operation behavior in docs/domain/use-cases.md and OpenSpec capability specs.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Read owned student",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Student"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Quoted current version."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StudentId"
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      },
+      "patch": {
+        "operationId": "updateStudent",
+        "tags": [
+          "Identity"
+        ],
+        "summary": "Edit settings/alias or archive student",
+        "description": "Cannot change owner or unarchive. Archive does not implicitly close ACTIVE context; no new plan/preparation/activation after archive. Existing snapshot and owning-teacher historical upload remain valid. First PREPARED activation uses latest profile version; re-entry to the same unarchived ACTIVE context keeps its frozen snapshot.\nOwner TEACHER only; If-Match quoted profile version. Archive is irreversible, does not close active context; identical legal patch returns current object without version increment. Alias uses Unicode code point length after trim. avatarKey is AVATAR_1/AVATAR_2.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Edit settings/alias or archive student",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Student"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Quoted current version."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Stale version",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid content/evidence",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "If-Match required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds transport cap",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict, archived student, stale context or active-context conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StudentId"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentPatch"
+              }
+            }
+          }
+        },
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/activities": {
+      "get": {
+        "operationId": "listActivities",
+        "tags": [
+          "Curriculum"
+        ],
+        "summary": "Read versioned activity catalog",
+        "description": "Read versioned activity catalog\nSee per-operation behavior in docs/domain/use-cases.md and OpenSpec capability specs.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Read versioned activity catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityCatalog"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/activities/{activityId}/versions/{version}": {
+      "get": {
+        "operationId": "readActivity",
+        "tags": [
+          "Curriculum"
+        ],
+        "summary": "Read immutable activity for preview",
+        "description": "Preview reads this definition but never writes Attempt or Reward. Definitions contain local answer rules.\nSee per-operation behavior in docs/domain/use-cases.md and OpenSpec capability specs.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Read immutable activity for preview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityDefinition"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ActivityId"
+          },
+          {
+            "$ref": "#/components/parameters/Version"
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/students/{studentId}/plan": {
+      "get": {
+        "operationId": "readPlan",
+        "tags": [
+          "Curriculum"
+        ],
+        "summary": "Read current plan or empty version 0",
+        "description": "Read current plan or empty version 0\nNo row means virtual version=0, revisionId=null, entries=[]. Reading never creates a plan.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Read current plan or empty version 0",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plan"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Quoted current version."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StudentId"
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      },
+      "put": {
+        "operationId": "replacePlan",
+        "tags": [
+          "Curriculum"
+        ],
+        "summary": "Create immutable plan revision",
+        "description": "Reject archived student with 409 STUDENT_ARCHIVED. Ordered 1-3 distinct activityId/version pairs. Existing ACTIVE context keeps its old revision; only next preparation uses this revision.\nOwner TEACHER; If-Match=0 first creation. 1-3 DISTINCT activityIds even across versions. Every successful non-retry PUT creates next immutable revision; stale retry is 412, reload required.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Create immutable plan revision",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plan"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Quoted current version."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting immutable content/context",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Stale version",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid content/evidence",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "If-Match required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds transport cap",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StudentId"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanWrite"
+              }
+            }
+          }
+        },
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/learning-contexts": {
+      "post": {
+        "operationId": "prepareContext",
+        "tags": [
+          "Learning"
+        ],
+        "summary": "Prepare owned immutable learning context",
+        "description": "Client contextId is idempotency key. Same request replay 200; changed content 409. No new context for archived student; profile and plan versions checked.\nTEACHER owner; stable contextId binds exact student/profile/plan. Identical request returns 200 existing PREPARED/ACTIVE/CLOSED context without re-opening; changed request 409. Archived student cannot create new context. Existing contextId is resolved and authorized before latest profile/plan checks: identical original prepare input returns the retained object even after edit/archive; this never reopens CLOSED or bypasses activation checks.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "201": {
+            "description": "Prepare owned immutable learning context",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextInfo"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting immutable content/context",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid content/evidence",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Same prepare request replayed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextInfo"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds transport cap",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrepareContextRequest"
+              }
+            }
+          }
+        },
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/learning-contexts/{contextId}": {
+      "get": {
+        "operationId": "readContext",
+        "tags": [
+          "Learning"
+        ],
+        "summary": "Read authorized context metadata",
+        "description": "Read authorized context metadata\nSee per-operation behavior in docs/domain/use-cases.md and OpenSpec capability specs.",
+        "x-roles": [
+          "TEACHER",
+          "LEARNER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Read authorized context metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextInfo"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ContextId"
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/learning-contexts/{contextId}/bundle": {
+      "get": {
+        "operationId": "readBundle",
+        "tags": [
+          "Learning"
+        ],
+        "summary": "Read authorized immutable bundle",
+        "description": "Teacher must own it; learner must be bound to this ACTIVE context. Caller stores authorized learning snapshot in IndexedDB; Service Worker must not cache generic private API.\nSee per-operation behavior in docs/domain/use-cases.md and OpenSpec capability specs.",
+        "x-roles": [
+          "TEACHER",
+          "LEARNER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Read authorized immutable bundle",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LearningBundle"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ContextId"
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/learning-contexts/{contextId}/activate": {
+      "post": {
+        "operationId": "activateContext",
+        "tags": [
+          "Learning"
+        ],
+        "summary": "Atomically activate and remove teacher privileges",
+        "description": "TEACHER activates PREPARED after resource/latest-version checks, or re-enters an owned ACTIVE unarchived context with its existing snapshot. CLOSED cannot reactivate. Already-bound LEARNER may only replay same context/digest. Database session mode downgraded without rotating credential, csrf refreshed. A different learner/context is denied. GET /auth/session resolves lost response.\nFirst activation: owner TEACHER, unarchived student, current plan/profile and matching bundleDigest, atomic ACTIVE+session downgrade+CSRF replacement. Existing ACTIVE: bound LEARNER replay or owner TEACHER re-entry if unarchived, frozen bundle retained. CLOSED denied; other active context 409. Read session/context after lost response.",
+        "x-roles": [
+          "TEACHER",
+          "LEARNER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Atomically activate and remove teacher privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivationReceipt"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting immutable content/context",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid content/evidence",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds transport cap",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ContextId"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActivateRequest"
+              }
+            }
+          }
+        },
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/learning-contexts/{contextId}/close": {
+      "post": {
+        "operationId": "closeContext",
+        "tags": [
+          "Learning"
+        ],
+        "summary": "Close owned context without deleting history",
+        "description": "Idempotent; PREPARED or ACTIVE becomes CLOSED. Requires online teacher reauthentication. UI must durably finalize any local in-progress attempt before closing; server cannot inspect another device offline. Closed PREPARED never accepts history. Owning teacher may recover previously ACTIVE history.\nOwner TEACHER only, idempotent close PREPARED/ACTIVE/CLOSED. Client must durably finalize local work first; backend cannot verify that browser fact. Serializes with ingestion. No implicit logout or plan replacement.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Close owned context without deleting history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextInfo"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds transport cap",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structurally valid JSON with invalid request fields",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ContextId"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/attempts/{attemptId}": {
+      "put": {
+        "operationId": "putAttempt",
+        "tags": [
+          "Learning"
+        ],
+        "summary": "Accept immutable terminal evidence",
+        "description": "Stable UUID in path and body. Learner restricted to ACTIVE bound context; owning teacher can recover previously activated history. Server replays evidence and commits attempt/items/reward in one transaction. Same canonical body ->200 original receipt, changed body ->409. Max body 1MiB.\nBound LEARNER only for ACTIVE context, or owner TEACHER for any previously activated context including CLOSED/archive history. Expired principal denied. Same canonical body ->200 original receipt (replayed=true), new ->201, changed body ->409. Unique race requires complete rollback then reauthorization/read in new transaction. For an existing attemptId, authorize against its persisted context/student before comparing canonical body, not against the new body contextId. Authorized different structured content is 409 even if new contextId does not exist; another owner is 404.",
+        "x-roles": [
+          "TEACHER",
+          "LEARNER"
+        ],
+        "responses": {
+          "201": {
+            "description": "Accept immutable terminal evidence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptReceipt"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting immutable content/context",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid content/evidence",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporary service failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Idempotent replay, same business receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptReceipt"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AttemptId"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptEnvelope"
+              }
+            }
+          }
+        },
+        "x-requirements": [
+          "FR-13",
+          "FR-14",
+          "FR-15",
+          "BR-07",
+          "BR-08",
+          "BR-09"
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      },
+      "get": {
+        "operationId": "readAttempt",
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Read owned derived attempt detail",
+        "description": "Read owned derived attempt detail\nOwner TEACHER only. Immutable server-derived detail with frozen context settings, authored versions, raw evidence and item outcomes.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Read owned derived attempt detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptDetail"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AttemptId"
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/students/{studentId}/attempts": {
+      "get": {
+        "operationId": "listAttempts",
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "List confirmed terminal attempts",
+        "description": "Only confirmed records. Ordered occurredAt descending then attemptId; device time is not trusted. No local pending records.\nSee per-operation behavior in docs/domain/use-cases.md and OpenSpec capability specs. Stable order: students createdAt DESC,id DESC; attempts endedAt DESC,attemptId DESC; pagination is live, not a cross-page snapshot.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "List confirmed terminal attempts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptPage"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid content/evidence",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StudentId"
+          },
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "$ref": "#/components/parameters/From"
+          },
+          {
+            "$ref": "#/components/parameters/To"
+          },
+          {
+            "$ref": "#/components/parameters/ActivityFilter"
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/students/{studentId}/summary": {
+      "get": {
+        "operationId": "readSummary",
+        "tags": [
+          "Reporting"
+        ],
+        "summary": "Read confirmed aggregate counts and ratios",
+        "description": "No data -> null rates, not 0 ability. Same filters for numerator/denominator. Adult help and other-device sync remain UNKNOWN.\nOwner TEACHER. Confirmed data only, endedAt occurrence [from,to); receivedAt freshness separate. Ratio-of-sums, null zero denominator, otherDeviceSyncState and adultAssistance UNKNOWN.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Read confirmed aggregate counts and ratios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid content/evidence",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StudentId"
+          },
+          {
+            "$ref": "#/components/parameters/From"
+          },
+          {
+            "$ref": "#/components/parameters/To"
+          },
+          {
+            "$ref": "#/components/parameters/ActivityFilter"
+          }
+        ],
+        "x-wire-example": "wire-examples.json#/cases (select by operationId)"
+      }
+    },
+    "/learning-contexts/{contextId}/teacher-session": {
+      "post": {
+        "operationId": "createContextTeacherSession",
+        "tags": [
+          "Learning"
+        ],
+        "summary": "Authenticate the original teacher of the current learner Context",
+        "description": "Current LEARNER and CSRF required. Authenticate credentials and verify the exact ACTIVE Context original owner before any revocation. Invalid credentials return 401 INVALID_CREDENTIALS; another valid teacher or mismatched Context returns 404 RESOURCE_NOT_FOUND with learner unchanged. On success atomically revoke only current browser principal, set a fresh TEACHER session cookie and CSRF, return SessionView. No Context or attempt data changes; other browsers are unaffected. Refresh GET /auth/csrf before the next mutation. Retrying after success with the old credential is not idempotent.",
+        "x-roles": [
+          "LEARNER"
+        ],
+        "responses": {
+          "200": {
+            "description": "Authenticate and rotate session credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionView"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role or CSRF denied; closed Context returns CONTEXT_CLOSED, prepared Context CONTEXT_NOT_ACTIVATED",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds transport cap",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structurally valid JSON with invalid request fields",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ContextId"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/learning-contexts/{contextId}/resume": {
+      "post": {
+        "operationId": "resumeContext",
+        "tags": [
+          "Learning"
+        ],
+        "summary": "Resume the same ACTIVE Context with a fresh learner principal",
+        "description": "Original owner TEACHER and CSRF required. ACTIVE Context only; PREPARED returns 403 CONTEXT_NOT_ACTIVATED, CLOSED returns 409 CONTEXT_CLOSED, archived student returns 409 STUDENT_ARCHIVED. Current profile/plan versions do not rebuild or replace the frozen bundle. Atomically revoke only current browser principal and set a fresh LEARNER cookie/CSRF bound to this Context; other browsers and Context/attempt rows are unchanged. Return SessionView and refresh GET /auth/csrf before next mutation. No body; retries with revoked credentials are not idempotent.",
+        "x-roles": [
+          "TEACHER"
+        ],
+        "responses": {
+          "200": {
+            "description": "New learner session for the same Context",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionView"
+                }
+              }
+            },
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                },
+                "description": "Private API responses are never cached."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role denied or CSRF invalid",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON, UUID, query or header syntax",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable or bounded transaction retries exhausted",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds transport cap",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structurally valid JSON with invalid request fields",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal failure; no stack trace or SQL disclosed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Context closed or student archived",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ContextId"
+          },
+          {
+            "$ref": "#/components/parameters/Csrf"
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Problem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "code": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldErrors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "message"
+              ]
+            },
+            "maxItems": 50
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code",
+          "detail",
+          "requestId"
+        ]
+      },
+      "SupportSettings": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "optionCount": {
+            "type": "integer",
+            "enum": [
+              2,
+              3
+            ]
+          },
+          "soundEnabled": {
+            "type": "boolean",
+            "default": false
+          },
+          "celebrationEnabled": {
+            "type": "boolean",
+            "default": false
+          },
+          "rewardKind": {
+            "type": "string",
+            "enum": [
+              "STAR",
+              "LEAF"
+            ]
+          }
+        },
+        "required": [
+          "optionCount",
+          "soundEnabled",
+          "celebrationEnabled",
+          "rewardKind"
+        ]
+      },
+      "StudentCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "alias": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "avatarKey": {
+            "type": "string",
+            "enum": [
+              "AVATAR_1",
+              "AVATAR_2"
+            ]
+          },
+          "settings": {
+            "$ref": "#/components/schemas/SupportSettings"
+          }
+        },
+        "required": [
+          "alias",
+          "avatarKey",
+          "settings"
+        ]
+      },
+      "StudentPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "alias": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "avatarKey": {
+            "type": "string",
+            "enum": [
+              "AVATAR_1",
+              "AVATAR_2"
+            ]
+          },
+          "settings": {
+            "$ref": "#/components/schemas/SupportSettings"
+          },
+          "archived": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [],
+        "minProperties": 1
+      },
+      "Student": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ownerTeacherId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "alias": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "avatarKey": {
+            "type": "string",
+            "enum": [
+              "AVATAR_1",
+              "AVATAR_2"
+            ]
+          },
+          "settings": {
+            "$ref": "#/components/schemas/SupportSettings"
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "ownerTeacherId",
+          "alias",
+          "avatarKey",
+          "settings",
+          "archived",
+          "version"
+        ]
+      },
+      "StudentPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Student"
+            },
+            "maxItems": 50
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ]
+      },
+      "Csrf": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 32
+          },
+          "headerName": {
+            "type": "string",
+            "const": "X-CSRF-TOKEN"
+          }
+        },
+        "required": [
+          "token",
+          "headerName"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "SessionView": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "type": "string",
+                "const": "ANONYMOUS"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "type": "string",
+                "const": "TEACHER"
+              },
+              "teacherId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "mode",
+              "teacherId",
+              "expiresAt"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "type": "string",
+                "const": "LEARNER"
+              },
+              "contextId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "mode",
+              "contextId",
+              "expiresAt"
+            ]
+          }
+        ]
+      },
+      "Resource": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "type": "string",
+            "pattern": "^/content/[^?#]+$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5242880
+          },
+          "mediaType": {
+            "type": "string",
+            "enum": [
+              "image/svg+xml",
+              "image/png",
+              "image/jpeg",
+              "audio/mpeg",
+              "audio/wav"
+            ]
+          }
+        },
+        "required": [
+          "url",
+          "sha256",
+          "bytes",
+          "mediaType"
+        ],
+        "description": "Single immutable resource <=5 MiB; bundle total <=30 MiB. SHA-256 is of actual served bytes, not an invented value."
+      },
+      "Choice": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "imageUrl": {
+            "type": "string",
+            "pattern": "^/content/"
+          },
+          "audioUrl": {
+            "type": "string",
+            "pattern": "^/content/"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "imageUrl"
+        ]
+      },
+      "SelectItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "instruction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "instructionAudioUrl": {
+            "type": "string",
+            "pattern": "^/content/"
+          },
+          "type": {
+            "type": "string",
+            "const": "SELECT_ONE"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Choice"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "correctChoiceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "id",
+          "instruction",
+          "instructionAudioUrl",
+          "type",
+          "choices",
+          "correctChoiceId"
+        ]
+      },
+      "OrderItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "instruction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "instructionAudioUrl": {
+            "type": "string",
+            "pattern": "^/content/"
+          },
+          "type": {
+            "type": "string",
+            "const": "ORDER_STEPS"
+          },
+          "cards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Choice"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "correctOrder": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "instruction",
+          "instructionAudioUrl",
+          "type",
+          "cards",
+          "correctOrder"
+        ]
+      },
+      "ActivityItem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SelectItem"
+          },
+          {
+            "$ref": "#/components/schemas/OrderItem"
+          }
+        ]
+      },
+      "ActivitySummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SELECT_ONE",
+              "ORDER_STEPS"
+            ]
+          },
+          "schemaVersion": {
+            "type": "integer",
+            "const": 1
+          },
+          "locale": {
+            "type": "string",
+            "pattern": "^[a-z]{2}$"
+          },
+          "itemCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "title",
+          "type",
+          "schemaVersion",
+          "locale",
+          "itemCount",
+          "digest"
+        ]
+      },
+      "ActivityDefinition": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SELECT_ONE",
+              "ORDER_STEPS"
+            ]
+          },
+          "schemaVersion": {
+            "type": "integer",
+            "const": 1
+          },
+          "locale": {
+            "type": "string",
+            "pattern": "^[a-z]{2}$"
+          },
+          "itemCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActivityItem"
+            },
+            "minItems": 1,
+            "maxItems": 20
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Resource"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "title",
+          "type",
+          "schemaVersion",
+          "locale",
+          "itemCount",
+          "digest",
+          "items",
+          "resources"
+        ]
+      },
+      "ActivityCatalog": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActivitySummary"
+            },
+            "maxItems": 50
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "PlanEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "activityId": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "activityVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "activityId",
+          "activityVersion"
+        ]
+      },
+      "PlanWrite": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanEntry"
+            },
+            "minItems": 1,
+            "maxItems": 3
+          }
+        },
+        "required": [
+          "entries"
+        ],
+        "description": "Ordered and distinct activityId/version pairs. Server checks referenced versions."
+      },
+      "Plan": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "planId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "studentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "revisionId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanEntry"
+            },
+            "maxItems": 3
+          }
+        },
+        "required": [
+          "planId",
+          "studentId",
+          "version",
+          "revisionId",
+          "entries"
+        ],
+        "description": "A newly created student has a virtual empty plan: version 0, planId/revisionId null; GET causes no insert. First PUT with If-Match \"0\" creates plan and revision. Editing requires If-Match."
+      },
+      "PrepareContextRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contextId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "studentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "planRevisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedProfileVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "contextId",
+          "studentId",
+          "planRevisionId",
+          "expectedProfileVersion",
+          "deviceId"
+        ]
+      },
+      "ContextInfo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contextId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ownerTeacherId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "studentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "planRevisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "profileVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PREPARED",
+              "ACTIVE",
+              "CLOSED"
+            ]
+          },
+          "bundleDigest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "activatedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "closedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "contextId",
+          "ownerTeacherId",
+          "studentId",
+          "planRevisionId",
+          "profileVersion",
+          "status",
+          "bundleDigest",
+          "createdAt",
+          "activatedAt",
+          "closedAt"
+        ]
+      },
+      "LearningBundle": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contextId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bundleVersion": {
+            "type": "integer",
+            "const": 1
+          },
+          "bundleDigest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "student": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "alias": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              },
+              "avatarKey": {
+                "type": "string"
+              },
+              "ownerTeacherId": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "required": [
+              "id",
+              "alias",
+              "avatarKey",
+              "ownerTeacherId"
+            ]
+          },
+          "settings": {
+            "$ref": "#/components/schemas/SupportSettings"
+          },
+          "planRevisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "activities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActivityDefinition"
+            },
+            "minItems": 1,
+            "maxItems": 3
+          }
+        },
+        "required": [
+          "contextId",
+          "bundleVersion",
+          "bundleDigest",
+          "student",
+          "settings",
+          "planRevisionId",
+          "activities"
+        ],
+        "description": "Frozen at prepare; first activation checks current profile/plan. Active resume preserves this bundle. optionCount=2 derives stable correct+first authored distractor; ORDER_STEPS always 3 cards."
+      },
+      "ActivateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "bundleDigest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "bundleDigest"
+        ]
+      },
+      "ActivationReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contextId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mode": {
+            "type": "string",
+            "const": "LEARNER"
+          },
+          "activatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "contextId",
+          "mode",
+          "activatedAt",
+          "replayed"
+        ],
+        "description": "Teacher authorization is removed in the same transaction as activation. Lost response is resolved using GET /auth/session; no offline guessing."
+      },
+      "SelectAnswer": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "SELECT_ONE"
+          },
+          "selectedChoiceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "type",
+          "selectedChoiceId"
+        ]
+      },
+      "OrderAnswer": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "ORDER_STEPS"
+          },
+          "orderedCardIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "type",
+          "orderedCardIds"
+        ]
+      },
+      "Answer": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SelectAnswer"
+          },
+          {
+            "$ref": "#/components/schemas/OrderAnswer"
+          }
+        ]
+      },
+      "AnswerEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "kind": {
+            "type": "string",
+            "const": "ANSWER"
+          },
+          "answer": {
+            "$ref": "#/components/schemas/Answer"
+          }
+        },
+        "required": [
+          "seq",
+          "kind",
+          "answer"
+        ]
+      },
+      "SupportEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "REPLAY",
+              "HINT_REVEALED",
+              "DEMO_REVEALED",
+              "DEMO_COMPLETED",
+              "SKIP"
+            ]
+          }
+        },
+        "required": [
+          "seq",
+          "kind"
+        ]
+      },
+      "EvidenceEvent": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AnswerEvent"
+          },
+          {
+            "$ref": "#/components/schemas/SupportEvent"
+          }
+        ]
+      },
+      "ItemEvidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "visited": {
+            "type": "boolean"
+          },
+          "activeMs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 86400000
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EvidenceEvent"
+            },
+            "maxItems": 2000
+          }
+        },
+        "required": [
+          "itemId",
+          "visited",
+          "activeMs",
+          "events"
+        ],
+        "description": "One item once; visited=false requires empty events and zero duration. Every authored item occurs exactly once, in order. Event seq starts at 1 and is contiguous; only the current item accepts events. Unopened items cannot precede visited ones. Cross-field and chronology checks are server business validation."
+      },
+      "AttemptEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "attemptId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contextId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "activityId": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "activityVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "payloadVersion": {
+            "type": "integer",
+            "const": 1
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "activeMs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 86400000
+          },
+          "endReason": {
+            "type": "string",
+            "enum": [
+              "FINISHED",
+              "STOPPED"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemEvidence"
+            },
+            "minItems": 1,
+            "maxItems": 20
+          }
+        },
+        "required": [
+          "attemptId",
+          "contextId",
+          "activityId",
+          "activityVersion",
+          "payloadVersion",
+          "deviceId",
+          "startedAt",
+          "endedAt",
+          "activeMs",
+          "endReason",
+          "items"
+        ],
+        "description": "Full frozen terminal evidence. All authored items once, in authored order. No client score/reward accepted. Payload <=1 MiB; server validates replay semantics and canonicalizes as defined in synchronization.md."
+      },
+      "Counts": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "plannedItems": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "firstSubmitted": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "firstCorrectUnassisted": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "resolvedItems": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "hintedItems": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "demonstratedItems": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "skippedItems": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unattemptedItems": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unfinishedItems": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "replayCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "plannedItems",
+          "firstSubmitted",
+          "firstCorrectUnassisted",
+          "resolvedItems",
+          "hintedItems",
+          "demonstratedItems",
+          "skippedItems",
+          "unattemptedItems",
+          "unfinishedItems",
+          "replayCount"
+        ]
+      },
+      "ItemOutcome": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "itemId": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "correct_first",
+              "correct_after_retry",
+              "correct_with_hint",
+              "assisted_demo",
+              "skipped",
+              "unattempted",
+              "unfinished"
+            ]
+          },
+          "firstSubmitted": {
+            "type": "boolean"
+          },
+          "firstCorrectUnassisted": {
+            "type": "boolean"
+          },
+          "hinted": {
+            "type": "boolean"
+          },
+          "demonstrated": {
+            "type": "boolean"
+          },
+          "replayCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "activeMs": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "itemId",
+          "outcome",
+          "firstSubmitted",
+          "firstCorrectUnassisted",
+          "hinted",
+          "demonstrated",
+          "replayCount",
+          "activeMs"
+        ]
+      },
+      "AttemptReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "attemptId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contextId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "studentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "finished_with_skips",
+              "ended_early"
+            ]
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/Counts"
+          },
+          "rewardKind": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "STAR",
+              "LEAF",
+              null
+            ]
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "attemptId",
+          "contextId",
+          "studentId",
+          "state",
+          "receivedAt",
+          "counts",
+          "rewardKind",
+          "replayed"
+        ],
+        "description": "Persisted derived result. replayed may differ on retry; receivedAt and business result stay stable."
+      },
+      "AttemptListItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "attemptId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "activityId": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "activityVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "finished_with_skips",
+              "ended_early"
+            ]
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "activeMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "counts": {
+            "$ref": "#/components/schemas/Counts"
+          }
+        },
+        "required": [
+          "attemptId",
+          "activityId",
+          "activityVersion",
+          "state",
+          "occurredAt",
+          "receivedAt",
+          "activeMs",
+          "counts"
+        ]
+      },
+      "AttemptPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttemptListItem"
+            },
+            "maxItems": 50
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ]
+      },
+      "AttemptDetail": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "receipt": {
+            "$ref": "#/components/schemas/AttemptReceipt"
+          },
+          "activityId": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "activityVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "settings": {
+            "$ref": "#/components/schemas/SupportSettings"
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "activeMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemOutcome"
+            },
+            "minItems": 1,
+            "maxItems": 20
+          },
+          "adultAssistance": {
+            "type": "string",
+            "const": "UNKNOWN"
+          },
+          "context": {
+            "$ref": "#/components/schemas/ContextInfo"
+          },
+          "bundle": {
+            "$ref": "#/components/schemas/LearningBundle"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/AttemptEnvelope"
+          }
+        },
+        "required": [
+          "receipt",
+          "activityId",
+          "activityVersion",
+          "settings",
+          "deviceId",
+          "occurredAt",
+          "activeMs",
+          "items",
+          "adultAssistance",
+          "context",
+          "bundle",
+          "evidence"
+        ],
+        "description": "Immutable detail includes original full evidence and frozen context/bundle. occurredAt equals evidence.endedAt. Receipt replayed=false for persisted detail."
+      },
+      "Summary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "latestReceivedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "from": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "to": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/Counts"
+          },
+          "completedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "finishedWithSkipsCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endedEarlyCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rewardCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "completionRate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "firstCorrectRate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "responseCoverage": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "resolutionRate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "adultAssistance": {
+            "type": "string",
+            "const": "UNKNOWN"
+          },
+          "otherDeviceSyncState": {
+            "type": "string",
+            "const": "UNKNOWN"
+          }
+        },
+        "required": [
+          "studentId",
+          "generatedAt",
+          "latestReceivedAt",
+          "from",
+          "to",
+          "counts",
+          "completedCount",
+          "finishedWithSkipsCount",
+          "endedEarlyCount",
+          "rewardCount",
+          "completionRate",
+          "firstCorrectRate",
+          "responseCoverage",
+          "resolutionRate",
+          "adultAssistance",
+          "otherDeviceSyncState"
+        ]
+      }
+    },
+    "parameters": {
+      "StudentId": {
+        "name": "studentId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "ContextId": {
+        "name": "contextId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "AttemptId": {
+        "name": "attemptId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "ActivityId": {
+        "name": "activityId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,63}$"
+        }
+      },
+      "Version": {
+        "name": "version",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^\"[0-9]+\"$"
+        },
+        "description": "Quoted current version, including \"0\" for a new empty plan."
+      },
+      "Csrf": {
+        "name": "X-CSRF-TOKEN",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 32
+        }
+      },
+      "Page": {
+        "name": "page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        }
+      },
+      "PageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 20
+        }
+      },
+      "From": {
+        "name": "from",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": "Inclusive UTC instant."
+      },
+      "To": {
+        "name": "to",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": "Exclusive UTC instant; must be later than from."
+      },
+      "ActivityFilter": {
+        "name": "activityId",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,63}$"
+        }
+      }
+    },
+    "securitySchemes": {
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Host-ppdk-session",
+        "description": "Secure; HttpOnly; Path=/; SameSite=Lax; no Domain. Roles enforced server-side; not supplied in example files."
+      }
+    }
+  },
+  "x-baseline-revision": "backend-docs-v1.1.0"
+}

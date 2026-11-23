@@ -1,0 +1,5 @@
+.env
+frontend/app/node_modules/
+frontend/app/dist-live/
+backend/**/target/
+trash files/

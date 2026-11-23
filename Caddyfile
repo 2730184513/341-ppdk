@@ -1,0 +1,30 @@
+{
+	skip_install_trust
+}
+
+{$PPDK_SITE} {
+	root * /srv/ppdk
+	encode zstd gzip
+
+	@backend path /api /api/* /content /content/*
+	handle @backend {
+		reverse_proxy backend:8091
+	}
+
+	@worker path /ppdk-live-worker.js
+	handle @worker {
+		header Cache-Control "no-cache"
+		file_server
+	}
+
+	@app path / /login /teacher /teacher/* /learn /learn/*
+	handle @app {
+		header Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+
+	handle {
+		file_server
+	}
+}
