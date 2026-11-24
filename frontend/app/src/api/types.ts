@@ -1,0 +1,12 @@
+import type { components } from './schema';
+export type DTO = components['schemas'];
+export type Student = DTO['Student'];
+export type Session = DTO['SessionView'];
+export type SessionSink = (session: Session) => void | Promise<void>;
+export type Settings = DTO['SupportSettings'];
+export type Activity = DTO['ActivityDefinition'];
+export type Item = DTO['ActivityItem'];
+export type Bundle = DTO['LearningBundle'];
+export type Envelope = DTO['AttemptEnvelope'];
+export type Receipt = DTO['AttemptReceipt'];
+export type Counts = DTO['Counts'];

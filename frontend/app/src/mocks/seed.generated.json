@@ -1,0 +1,36 @@
+{
+  "readStudent": {
+    "id": "b6982d87-3191-5d32-94b9-6c8733e1955e",
+    "ownerTeacherId": "eceefd47-6cdf-5c63-b615-9380a7ac8207",
+    "alias": "Demo 01",
+    "avatarKey": "AVATAR_1",
+    "settings": {
+      "optionCount": 3,
+      "soundEnabled": false,
+      "celebrationEnabled": false,
+      "rewardKind": "STAR"
+    },
+    "archived": false,
+    "version": 1
+  },
+  "readPlan": {
+    "planId": "45eebde7-6bd4-5668-9b72-8a91480e72ae",
+    "studentId": "b6982d87-3191-5d32-94b9-6c8733e1955e",
+    "version": 1,
+    "revisionId": "3cd2bdf3-207f-50e2-b0a6-4fa11851d517",
+    "entries": [
+      {
+        "activityId": "object-recognition",
+        "activityVersion": 1
+      },
+      {
+        "activityId": "quantity-one-five",
+        "activityVersion": 1
+      },
+      {
+        "activityId": "daily-sequences",
+        "activityVersion": 1
+      }
+    ]
+  }
+}
