@@ -1,0 +1,682 @@
+{
+  "activities": [
+    {
+      "id": "object-recognition",
+      "version": 1,
+      "title": "Everyday objects",
+      "type": "SELECT_ONE",
+      "schemaVersion": 1,
+      "locale": "en",
+      "itemCount": 5,
+      "items": [
+        {
+          "id": "cup",
+          "type": "SELECT_ONE",
+          "instruction": "Find the cup.",
+          "instructionAudioUrl": "/content/object-recognition/v1/cup.wav",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "Cup",
+              "imageUrl": "/content/object-recognition/v1/cup-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "Spoon",
+              "imageUrl": "/content/object-recognition/v1/cup-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "Bag",
+              "imageUrl": "/content/object-recognition/v1/cup-c3.svg"
+            }
+          ],
+          "correctChoiceId": "c1"
+        },
+        {
+          "id": "shoe",
+          "type": "SELECT_ONE",
+          "instruction": "Find the shoe.",
+          "instructionAudioUrl": "/content/object-recognition/v1/shoe.wav",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "Hat",
+              "imageUrl": "/content/object-recognition/v1/shoe-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "Shoe",
+              "imageUrl": "/content/object-recognition/v1/shoe-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "Ball",
+              "imageUrl": "/content/object-recognition/v1/shoe-c3.svg"
+            }
+          ],
+          "correctChoiceId": "c2"
+        },
+        {
+          "id": "book",
+          "type": "SELECT_ONE",
+          "instruction": "Find the book.",
+          "instructionAudioUrl": "/content/object-recognition/v1/book.wav",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "Bag",
+              "imageUrl": "/content/object-recognition/v1/book-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "Cup",
+              "imageUrl": "/content/object-recognition/v1/book-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "Book",
+              "imageUrl": "/content/object-recognition/v1/book-c3.svg"
+            }
+          ],
+          "correctChoiceId": "c3"
+        },
+        {
+          "id": "spoon",
+          "type": "SELECT_ONE",
+          "instruction": "Find the spoon.",
+          "instructionAudioUrl": "/content/object-recognition/v1/spoon.wav",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "Spoon",
+              "imageUrl": "/content/object-recognition/v1/spoon-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "Shoe",
+              "imageUrl": "/content/object-recognition/v1/spoon-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "Hat",
+              "imageUrl": "/content/object-recognition/v1/spoon-c3.svg"
+            }
+          ],
+          "correctChoiceId": "c1"
+        },
+        {
+          "id": "bag",
+          "type": "SELECT_ONE",
+          "instruction": "Find the bag.",
+          "instructionAudioUrl": "/content/object-recognition/v1/bag.wav",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "Book",
+              "imageUrl": "/content/object-recognition/v1/bag-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "Bag",
+              "imageUrl": "/content/object-recognition/v1/bag-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "Ball",
+              "imageUrl": "/content/object-recognition/v1/bag-c3.svg"
+            }
+          ],
+          "correctChoiceId": "c2"
+        }
+      ],
+      "resources": [
+        {
+          "url": "/content/object-recognition/v1/bag-c1.svg",
+          "sha256": "38b0c71e413ea51089ea78d08d05fe0a863a3e672b412573143d797da2fb9431",
+          "bytes": 458,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/bag-c2.svg",
+          "sha256": "f4e6ec8b5418247ede9416b1f4b94740df3f97178cbdf819207f17de96a9523b",
+          "bytes": 504,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/bag-c3.svg",
+          "sha256": "2fd255069a4f4c4331fbc052cf85c07843bc643d706ac4e79a6e58f8341ec23d",
+          "bytes": 470,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/bag.wav",
+          "sha256": "780f4f04f330911fe3d81a3e61ac4c799865617f736120a17c3d2f665d486fea",
+          "bytes": 114766,
+          "mediaType": "audio/wav"
+        },
+        {
+          "url": "/content/object-recognition/v1/book-c1.svg",
+          "sha256": "f4e6ec8b5418247ede9416b1f4b94740df3f97178cbdf819207f17de96a9523b",
+          "bytes": 504,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/book-c2.svg",
+          "sha256": "4255d34db8b96f8542ffa727a62eab464c3e523a4b168e4fccaf36e1ff1ca071",
+          "bytes": 403,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/book-c3.svg",
+          "sha256": "38b0c71e413ea51089ea78d08d05fe0a863a3e672b412573143d797da2fb9431",
+          "bytes": 458,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/book.wav",
+          "sha256": "130daa67fcfb9e761bd3475405f99d5b3b53a68273ed96c30fceae0bf1ed6861",
+          "bytes": 110670,
+          "mediaType": "audio/wav"
+        },
+        {
+          "url": "/content/object-recognition/v1/cup-c1.svg",
+          "sha256": "4255d34db8b96f8542ffa727a62eab464c3e523a4b168e4fccaf36e1ff1ca071",
+          "bytes": 403,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/cup-c2.svg",
+          "sha256": "e6ecb792963ae317ce66c94ef6dcc420cae80143924c81cf77ba9dd07d95e189",
+          "bytes": 389,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/cup-c3.svg",
+          "sha256": "f4e6ec8b5418247ede9416b1f4b94740df3f97178cbdf819207f17de96a9523b",
+          "bytes": 504,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/cup.wav",
+          "sha256": "8584d17a671d62e3f32f239abbb1654847f004436a0f0172c8be43de6577132c",
+          "bytes": 102478,
+          "mediaType": "audio/wav"
+        },
+        {
+          "url": "/content/object-recognition/v1/shoe-c1.svg",
+          "sha256": "3d580659cb5652a17415c808eb7986c4dcb816def8f4190327d823660beff6ac",
+          "bytes": 431,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/shoe-c2.svg",
+          "sha256": "dca9fd16219c3da1d69590c341c64558e595caa903ef7709752ce2a3a745affa",
+          "bytes": 461,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/shoe-c3.svg",
+          "sha256": "2fd255069a4f4c4331fbc052cf85c07843bc643d706ac4e79a6e58f8341ec23d",
+          "bytes": 470,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/shoe.wav",
+          "sha256": "8ec650d25da862883d32e9e9dd999ccb676069523e519619d4fbe405df173183",
+          "bytes": 131150,
+          "mediaType": "audio/wav"
+        },
+        {
+          "url": "/content/object-recognition/v1/spoon-c1.svg",
+          "sha256": "e6ecb792963ae317ce66c94ef6dcc420cae80143924c81cf77ba9dd07d95e189",
+          "bytes": 389,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/spoon-c2.svg",
+          "sha256": "dca9fd16219c3da1d69590c341c64558e595caa903ef7709752ce2a3a745affa",
+          "bytes": 461,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/spoon-c3.svg",
+          "sha256": "3d580659cb5652a17415c808eb7986c4dcb816def8f4190327d823660beff6ac",
+          "bytes": 431,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/object-recognition/v1/spoon.wav",
+          "sha256": "6c76f63ddc8ace1c1bea112a702f74304bbf863e6c77caa249fe29e16a940460",
+          "bytes": 159822,
+          "mediaType": "audio/wav"
+        }
+      ],
+      "digest": "e63e5fa7b7650f1069835ddfe7c513c3b0da9a0f8f3c709573dd7570a70741f4"
+    },
+    {
+      "id": "quantity-one-five",
+      "version": 1,
+      "title": "Count one to five",
+      "type": "SELECT_ONE",
+      "schemaVersion": 1,
+      "locale": "en",
+      "itemCount": 5,
+      "items": [
+        {
+          "id": "count-1",
+          "type": "SELECT_ONE",
+          "instruction": "Count the dots. Choose 1.",
+          "instructionAudioUrl": "/content/quantity-one-five/v1/count-1.wav",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "1",
+              "imageUrl": "/content/quantity-one-five/v1/count-1-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "2",
+              "imageUrl": "/content/quantity-one-five/v1/count-1-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "3",
+              "imageUrl": "/content/quantity-one-five/v1/count-1-c3.svg"
+            }
+          ],
+          "correctChoiceId": "c1"
+        },
+        {
+          "id": "count-2",
+          "type": "SELECT_ONE",
+          "instruction": "Count the dots. Choose 2.",
+          "instructionAudioUrl": "/content/quantity-one-five/v1/count-2.wav",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "2",
+              "imageUrl": "/content/quantity-one-five/v1/count-2-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "3",
+              "imageUrl": "/content/quantity-one-five/v1/count-2-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "4",
+              "imageUrl": "/content/quantity-one-five/v1/count-2-c3.svg"
+            }
+          ],
+          "correctChoiceId": "c1"
+        },
+        {
+          "id": "count-3",
+          "type": "SELECT_ONE",
+          "instruction": "Count the dots. Choose 3.",
+          "instructionAudioUrl": "/content/quantity-one-five/v1/count-3.wav",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "3",
+              "imageUrl": "/content/quantity-one-five/v1/count-3-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "4",
+              "imageUrl": "/content/quantity-one-five/v1/count-3-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "5",
+              "imageUrl": "/content/quantity-one-five/v1/count-3-c3.svg"
+            }
+          ],
+          "correctChoiceId": "c1"
+        },
+        {
+          "id": "count-4",
+          "type": "SELECT_ONE",
+          "instruction": "Count the dots. Choose 4.",
+          "instructionAudioUrl": "/content/quantity-one-five/v1/count-4.wav",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "4",
+              "imageUrl": "/content/quantity-one-five/v1/count-4-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "5",
+              "imageUrl": "/content/quantity-one-five/v1/count-4-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "1",
+              "imageUrl": "/content/quantity-one-five/v1/count-4-c3.svg"
+            }
+          ],
+          "correctChoiceId": "c1"
+        },
+        {
+          "id": "count-5",
+          "type": "SELECT_ONE",
+          "instruction": "Count the dots. Choose 5.",
+          "instructionAudioUrl": "/content/quantity-one-five/v1/count-5.wav",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "5",
+              "imageUrl": "/content/quantity-one-five/v1/count-5-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "1",
+              "imageUrl": "/content/quantity-one-five/v1/count-5-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "2",
+              "imageUrl": "/content/quantity-one-five/v1/count-5-c3.svg"
+            }
+          ],
+          "correctChoiceId": "c1"
+        }
+      ],
+      "resources": [
+        {
+          "url": "/content/quantity-one-five/v1/count-1-c1.svg",
+          "sha256": "9567e1275f0e019fa54443cbb6d502c3498ec4dec9aec4ec9affd25946c78b23",
+          "bytes": 329,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-1-c2.svg",
+          "sha256": "cd979871872ced92e7b7569424a2df7a5759eefa084144fa3d4cd62db764732e",
+          "bytes": 394,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-1-c3.svg",
+          "sha256": "8ca17f4e075ed2edc8efbb18aab6a65ee6ba28796b3634db81dc90224f9282ba",
+          "bytes": 458,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-1.wav",
+          "sha256": "2ba9e3049c65e879ecd7532900f895fca66688ab2fdebfc1a5f92f17421b5e15",
+          "bytes": 213070,
+          "mediaType": "audio/wav"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-2-c1.svg",
+          "sha256": "cd979871872ced92e7b7569424a2df7a5759eefa084144fa3d4cd62db764732e",
+          "bytes": 394,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-2-c2.svg",
+          "sha256": "8ca17f4e075ed2edc8efbb18aab6a65ee6ba28796b3634db81dc90224f9282ba",
+          "bytes": 458,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-2-c3.svg",
+          "sha256": "8cfb3ac5b7e01d749784cca872adff50bd7f5e93ba1ba9ab38186496c8a0e083",
+          "bytes": 524,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-2.wav",
+          "sha256": "bd127737201bb575a1b9f53e4393a73c4d383150db51d86111e1ee167481cbb1",
+          "bytes": 229454,
+          "mediaType": "audio/wav"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-3-c1.svg",
+          "sha256": "8ca17f4e075ed2edc8efbb18aab6a65ee6ba28796b3634db81dc90224f9282ba",
+          "bytes": 458,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-3-c2.svg",
+          "sha256": "8cfb3ac5b7e01d749784cca872adff50bd7f5e93ba1ba9ab38186496c8a0e083",
+          "bytes": 524,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-3-c3.svg",
+          "sha256": "df7faf6cbf348d44d53475a7f0bbd3cdc82f838df9ce0de7519e35e2f36f0693",
+          "bytes": 585,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-3.wav",
+          "sha256": "98a6eaf987e118775556889befcb723fa4ab6a6d931cdf7759fc23cd4d4bda18",
+          "bytes": 208974,
+          "mediaType": "audio/wav"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-4-c1.svg",
+          "sha256": "8cfb3ac5b7e01d749784cca872adff50bd7f5e93ba1ba9ab38186496c8a0e083",
+          "bytes": 524,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-4-c2.svg",
+          "sha256": "df7faf6cbf348d44d53475a7f0bbd3cdc82f838df9ce0de7519e35e2f36f0693",
+          "bytes": 585,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-4-c3.svg",
+          "sha256": "9567e1275f0e019fa54443cbb6d502c3498ec4dec9aec4ec9affd25946c78b23",
+          "bytes": 329,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-4.wav",
+          "sha256": "39acbcbd11215b39b6c134a61b18006af8cf7477ffe36839b9f3f1ed2ed091d2",
+          "bytes": 200782,
+          "mediaType": "audio/wav"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-5-c1.svg",
+          "sha256": "df7faf6cbf348d44d53475a7f0bbd3cdc82f838df9ce0de7519e35e2f36f0693",
+          "bytes": 585,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-5-c2.svg",
+          "sha256": "9567e1275f0e019fa54443cbb6d502c3498ec4dec9aec4ec9affd25946c78b23",
+          "bytes": 329,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-5-c3.svg",
+          "sha256": "cd979871872ced92e7b7569424a2df7a5759eefa084144fa3d4cd62db764732e",
+          "bytes": 394,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/quantity-one-five/v1/count-5.wav",
+          "sha256": "ad98d0c205a994c28096cfb21c3bf9074466236411aa9858faa1cc30ff65daae",
+          "bytes": 245838,
+          "mediaType": "audio/wav"
+        }
+      ],
+      "digest": "a85c191d29c00cb98ebce5919a1f6af4a91c1ae4e7b7cae6656dbb3526a2d5ea"
+    },
+    {
+      "id": "daily-sequences",
+      "version": 1,
+      "title": "Daily sequences",
+      "type": "ORDER_STEPS",
+      "schemaVersion": 1,
+      "locale": "en",
+      "itemCount": 3,
+      "items": [
+        {
+          "id": "wash-hands",
+          "type": "ORDER_STEPS",
+          "instruction": "Put the hand-washing pictures in order.",
+          "instructionAudioUrl": "/content/daily-sequences/v1/wash-hands.wav",
+          "cards": [
+            {
+              "id": "c1",
+              "label": "Wet hands",
+              "imageUrl": "/content/daily-sequences/v1/wash-hands-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "Use soap",
+              "imageUrl": "/content/daily-sequences/v1/wash-hands-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "Rinse hands",
+              "imageUrl": "/content/daily-sequences/v1/wash-hands-c3.svg"
+            }
+          ],
+          "correctOrder": [
+            "c1",
+            "c2",
+            "c3"
+          ]
+        },
+        {
+          "id": "pack-bag",
+          "type": "ORDER_STEPS",
+          "instruction": "Put the school-bag pictures in order.",
+          "instructionAudioUrl": "/content/daily-sequences/v1/pack-bag.wav",
+          "cards": [
+            {
+              "id": "c1",
+              "label": "Open bag",
+              "imageUrl": "/content/daily-sequences/v1/pack-bag-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "Put book in bag",
+              "imageUrl": "/content/daily-sequences/v1/pack-bag-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "Close bag",
+              "imageUrl": "/content/daily-sequences/v1/pack-bag-c3.svg"
+            }
+          ],
+          "correctOrder": [
+            "c1",
+            "c2",
+            "c3"
+          ]
+        },
+        {
+          "id": "prepare-snack",
+          "type": "ORDER_STEPS",
+          "instruction": "Put the snack pictures in order.",
+          "instructionAudioUrl": "/content/daily-sequences/v1/prepare-snack.wav",
+          "cards": [
+            {
+              "id": "c1",
+              "label": "Wash hands",
+              "imageUrl": "/content/daily-sequences/v1/prepare-snack-c1.svg"
+            },
+            {
+              "id": "c2",
+              "label": "Put fruit on plate",
+              "imageUrl": "/content/daily-sequences/v1/prepare-snack-c2.svg"
+            },
+            {
+              "id": "c3",
+              "label": "Eat the snack",
+              "imageUrl": "/content/daily-sequences/v1/prepare-snack-c3.svg"
+            }
+          ],
+          "correctOrder": [
+            "c1",
+            "c2",
+            "c3"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "url": "/content/daily-sequences/v1/pack-bag-c1.svg",
+          "sha256": "0185e0b6e7a244c5204be2bc93f0584ed95488c690021159c36130fd3a463f25",
+          "bytes": 507,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/daily-sequences/v1/pack-bag-c2.svg",
+          "sha256": "c9cf356c9a577f5200ed29c811df647a69e61d85fcc91243a856803422b9b716",
+          "bytes": 581,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/daily-sequences/v1/pack-bag-c3.svg",
+          "sha256": "bbd212f90750c934a078cc3d827d2fed6884f8538b249ac1deaa92362b8140ac",
+          "bytes": 511,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/daily-sequences/v1/pack-bag.wav",
+          "sha256": "a22f992eab2679d2d51bab7654e744667decf38e44e82bc5b8b4c39adfa49eca",
+          "bytes": 217166,
+          "mediaType": "audio/wav"
+        },
+        {
+          "url": "/content/daily-sequences/v1/prepare-snack-c1.svg",
+          "sha256": "48b54d9bc6439f36b6abdecb5376d43847f26294cb223edb527d501a0d2e5b7f",
+          "bytes": 664,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/daily-sequences/v1/prepare-snack-c2.svg",
+          "sha256": "03f6c2cde7a3f4e0f36ddc8d2a192a594c1fbcaf86016aedd4639df16d7b2254",
+          "bytes": 651,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/daily-sequences/v1/prepare-snack-c3.svg",
+          "sha256": "f8ad09f82580d3b94b69f2fee0317b8334e680da51fa3a88006752f1d3d93f7f",
+          "bytes": 674,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/daily-sequences/v1/prepare-snack.wav",
+          "sha256": "1ab954c68eda08d8f7db4e34855a531133ba84171451512fd67b78a2b6574af5",
+          "bytes": 172110,
+          "mediaType": "audio/wav"
+        },
+        {
+          "url": "/content/daily-sequences/v1/wash-hands-c1.svg",
+          "sha256": "d73367e2f5fb4088fad1d039a1757b692a0aab51f79c8777688c3c3f278c56a1",
+          "bytes": 565,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/daily-sequences/v1/wash-hands-c2.svg",
+          "sha256": "379516e0fbb86e04334468e1f06de236ff524bc70498ae71c96278419621ea3b",
+          "bytes": 742,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/daily-sequences/v1/wash-hands-c3.svg",
+          "sha256": "97d8d0e520e5213b2f8d9428527bd4c8ede4c6abade776f0bfcc0786d2a23802",
+          "bytes": 656,
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "url": "/content/daily-sequences/v1/wash-hands.wav",
+          "sha256": "cfbe0b282bafb6294d3489f95a81ffaf67dadeb097fd325a62cdfb693f934db0",
+          "bytes": 217166,
+          "mediaType": "audio/wav"
+        }
+      ],
+      "digest": "e6ccde9558c2dfc4403fecf69d00b1c31ee6fe33eff3ad5447189cba8e26c5b5"
+    }
+  ]
+}

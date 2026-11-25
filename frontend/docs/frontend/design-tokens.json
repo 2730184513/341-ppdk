@@ -1,0 +1,436 @@
+{
+  "revision": "frontend-repair-r1",
+  "status": "implemented_awaiting_acceptance",
+  "direction": "C - Warm storybook / Sand and terracotta",
+  "owner": "docs/frontend/system-design.md#ds-02-color-and-semantics",
+  "primitive": {
+    "white": "#FFFFFF",
+    "sand50": "#FBF3E7",
+    "sand75": "#FFFCF7",
+    "sand100": "#F6EBDD",
+    "sand200": "#E2D1BF",
+    "sand500": "#92735E",
+    "sand600": "#705B50",
+    "brown900": "#442F28",
+    "clay100": "#F6DDC7",
+    "clay700": "#97472F",
+    "clay800": "#7C3826",
+    "clay900": "#652D20",
+    "green50": "#EDF3E8",
+    "green800": "#365C3D",
+    "blue50": "#EAF0F7",
+    "blue800": "#315D83",
+    "blue900": "#245B87",
+    "amber50": "#FFF0CC",
+    "amber800": "#785000",
+    "red50": "#FAE8E4",
+    "red800": "#962F32"
+  },
+  "semantic": {
+    "background": "sand50",
+    "surface": "sand75",
+    "surfaceRaised": "white",
+    "surfaceSubtle": "sand100",
+    "text": "brown900",
+    "textMuted": "sand600",
+    "border": "sand200",
+    "controlBorder": "sand500",
+    "primary": "clay700",
+    "primaryHover": "clay800",
+    "primaryPressed": "clay900",
+    "onPrimary": "white",
+    "secondary": "clay100",
+    "onSecondary": "clay800",
+    "selected": "clay100",
+    "selectedText": "clay800",
+    "focus": "blue900",
+    "success": "green800",
+    "successSurface": "green50",
+    "info": "blue800",
+    "infoSurface": "blue50",
+    "warning": "amber800",
+    "warningSurface": "amber50",
+    "danger": "red800",
+    "dangerSurface": "red50",
+    "reward": "amber800",
+    "rewardSurface": "amber50",
+    "disabledText": "sand600",
+    "disabledSurface": "sand100",
+    "neutralFeedback": "sand100",
+    "neutralFeedbackText": "brown900"
+  },
+  "components": {
+    "teacherPrimaryButton": {
+      "background": "primary",
+      "text": "onPrimary",
+      "hoverBackground": "primaryHover",
+      "pressedBackground": "primaryPressed",
+      "radius": 16,
+      "minHeight": 48
+    },
+    "learnerPrimaryButton": {
+      "background": "primary",
+      "text": "onPrimary",
+      "radius": 20,
+      "minHeight": 72
+    },
+    "textButton": {
+      "background": "surface",
+      "text": "primary",
+      "underlineForNavigation": true
+    },
+    "choiceCard": {
+      "background": "surfaceRaised",
+      "text": "text",
+      "border": "controlBorder",
+      "selectedBackground": "selected",
+      "selectedText": "selectedText",
+      "selectedBorder": "primary",
+      "radius": 28,
+      "selectedBorderWidth": 3
+    },
+    "formControl": {
+      "background": "surfaceRaised",
+      "text": "text",
+      "placeholderText": "textMuted",
+      "border": "controlBorder",
+      "errorBorder": "danger",
+      "radius": 12,
+      "minHeight": 48
+    },
+    "localSyncNotice": {
+      "background": "infoSurface",
+      "text": "info"
+    },
+    "archiveConfirmation": {
+      "background": "dangerSurface",
+      "text": "danger"
+    },
+    "rewardBadge": {
+      "background": "rewardSurface",
+      "text": "reward"
+    },
+    "tryAgainNotice": {
+      "background": "neutralFeedback",
+      "text": "neutralFeedbackText"
+    },
+    "teacherPanel": {
+      "background": "surface",
+      "border": "border",
+      "radius": 24
+    },
+    "popover": {
+      "background": "surfaceRaised",
+      "text": "text",
+      "border": "controlBorder",
+      "radius": 16
+    },
+    "dialog": {
+      "background": "surfaceRaised",
+      "text": "text",
+      "radius": 24
+    },
+    "teacherSecondaryButton": {
+      "background": "secondary",
+      "text": "onSecondary",
+      "radius": 16,
+      "minHeight": 48
+    },
+    "learnerSecondaryButton": {
+      "background": "secondary",
+      "text": "onSecondary",
+      "radius": 20,
+      "minHeight": 72
+    }
+  },
+  "dimensionUnit": "CSS px (typography implemented as rem against 16px default)",
+  "spacing": [
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48,
+    64
+  ],
+  "radius": {
+    "control": 12,
+    "teacherButton": 16,
+    "learnerButton": 20,
+    "card": 24,
+    "learnerCard": 28,
+    "dialog": 24,
+    "popover": 16
+  },
+  "typography": {
+    "family": "system-ui, -apple-system, Segoe UI, Arial, Microsoft YaHei, sans-serif",
+    "body": {
+      "size": 16,
+      "lineHeight": 1.5,
+      "weight": 400
+    },
+    "helper": {
+      "size": 14,
+      "lineHeight": 1.5,
+      "weight": 400
+    },
+    "teacherHeading": {
+      "size": 32,
+      "lineHeight": 1.25,
+      "weight": 700
+    },
+    "sectionHeading": {
+      "size": 24,
+      "lineHeight": 1.35,
+      "weight": 600
+    },
+    "learnerInstruction": {
+      "size": 32,
+      "lineHeight": 1.4,
+      "weight": 600
+    },
+    "learnerAction": {
+      "size": 24,
+      "lineHeight": 1.4,
+      "weight": 600
+    }
+  },
+  "targets": {
+    "learnerMinWidth": 64,
+    "learnerMinHeight": 64,
+    "learnerMinGap": 12,
+    "teacherRecommendedMin": 48
+  },
+  "focus": {
+    "width": 3,
+    "offset": 2,
+    "isolationSurface": "surface"
+  },
+  "contrastPairs": [
+    {
+      "foreground": "text",
+      "background": "background",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "text",
+      "background": "surface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "text",
+      "background": "surfaceSubtle",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "textMuted",
+      "background": "background",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "textMuted",
+      "background": "surface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "textMuted",
+      "background": "surfaceSubtle",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "onPrimary",
+      "background": "primary",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "onPrimary",
+      "background": "primaryHover",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "primary",
+      "background": "surface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "selectedText",
+      "background": "selected",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "primary",
+      "background": "selected",
+      "minimum": 3
+    },
+    {
+      "foreground": "controlBorder",
+      "background": "surface",
+      "minimum": 3
+    },
+    {
+      "foreground": "controlBorder",
+      "background": "background",
+      "minimum": 3
+    },
+    {
+      "foreground": "success",
+      "background": "successSurface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "info",
+      "background": "infoSurface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "warning",
+      "background": "warningSurface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "danger",
+      "background": "dangerSurface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "reward",
+      "background": "rewardSurface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "focus",
+      "background": "surface",
+      "minimum": 3
+    },
+    {
+      "foreground": "focus",
+      "background": "background",
+      "minimum": 3
+    },
+    {
+      "foreground": "disabledText",
+      "background": "disabledSurface",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "text",
+      "background": "surfaceRaised",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "textMuted",
+      "background": "surfaceRaised",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "onPrimary",
+      "background": "primaryPressed",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "onSecondary",
+      "background": "secondary",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "controlBorder",
+      "background": "selected",
+      "minimum": 3
+    },
+    {
+      "foreground": "controlBorder",
+      "background": "surfaceSubtle",
+      "minimum": 3
+    },
+    {
+      "foreground": "primary",
+      "background": "background",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "primary",
+      "background": "surfaceRaised",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "danger",
+      "background": "surfaceRaised",
+      "minimum": 4.5
+    },
+    {
+      "foreground": "focus",
+      "background": "surfaceRaised",
+      "minimum": 3
+    },
+    {
+      "foreground": "focus",
+      "background": "selected",
+      "minimum": 3
+    },
+    {
+      "foreground": "neutralFeedbackText",
+      "background": "neutralFeedback",
+      "minimum": 4.5
+    }
+  ],
+  "limits": [
+    "The user selected direction C and authorized refinement; these design rules are not an implemented or user-accepted frontend.",
+    "Decorative border is not an accessible control boundary; use controlBorder for meaningful boundaries.",
+    "Focus assumes the specified surface isolation ring, not direct use on any possible image or color.",
+    "Contrast checks do not establish full WCAG conformance, perception on real devices or user acceptance.",
+    "These are design inputs, not installed framework configuration or a frontend implementation."
+  ],
+  "decisionRef": "docs/frontend/theme-selection.json",
+  "layout": {
+    "teacherContentMax": 1200,
+    "learnerContentMax": 1200,
+    "teacherTopNavMinHeight": 72,
+    "teacherGutter": 32,
+    "tabletGutter": 24,
+    "compactGutter": 16,
+    "panelPadding": 24,
+    "learnerCardGap": 24,
+    "popoverWidth": [
+      360,
+      480
+    ],
+    "drawerWidth": [
+      480,
+      560
+    ],
+    "dialogWidth": [
+      480,
+      560
+    ],
+    "breakpoints": [
+      640,
+      960,
+      1280
+    ],
+    "contentMax": 1200,
+    "loginFormMax": 480,
+    "readingMax": 640
+  },
+  "elevation": {
+    "panel": "none",
+    "popover": "0 6px 20px rgb(68 47 40 / 12%)",
+    "modal": "0 12px 40px rgb(68 47 40 / 18%)",
+    "scrim": "rgb(40 24 18 / 40%)"
+  },
+  "layers": {
+    "base": 0,
+    "sticky": 10,
+    "popover": 20,
+    "modal": 30,
+    "globalNotice": 40
+  },
+  "motion": {
+    "statusMs": 150,
+    "overlayMs": 180,
+    "reducedMotionMs": 0,
+    "autoAdvance": false,
+    "celebrationDefault": false,
+    "status": "System constraints only; detailed F3 motion selection remains unapproved"
+  }
+}
