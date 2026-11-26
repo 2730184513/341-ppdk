@@ -1,0 +1,26 @@
+.artwork {
+  display: inline-block;
+  object-fit: contain;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.artwork-fallback {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  max-width: 100%;
+  font-size: 0.75rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  overflow: auto;
+}
+.artwork-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: var(--space-16);
+  margin-top: var(--space-24);
+}
+.artwork-gallery h2 {
+  font-size: 1rem;
+  margin-bottom: var(--space-16);
+}

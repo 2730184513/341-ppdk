@@ -1,0 +1,23 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--teacher-panel-radius);
+  padding: var(--layout-panel-padding);
+  min-width: 0;
+}
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.panel > .notice + * {
+  margin-top: var(--space-24);
+}
+@media (max-width: 639px) {
+  .panel {
+    padding: 20px;
+  }
+}

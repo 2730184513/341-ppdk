@@ -1,0 +1,96 @@
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px var(--space-12);
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: var(--subtle);
+}
+.badge.success {
+  color: var(--success);
+  background: var(--success-bg);
+}
+.badge.warning {
+  color: var(--warning);
+  background: var(--warning-bg);
+}
+.badge.info {
+  color: var(--info);
+  background: var(--info-bg);
+}
+.empty {
+  text-align: center;
+  padding: 40px var(--space-24);
+  display: grid;
+  justify-items: center;
+  gap: var(--space-16);
+}
+.empty-symbol {
+  display: grid;
+  place-items: center;
+  background: var(--subtle);
+  border-radius: 50%;
+  width: 72px;
+  height: 72px;
+  color: var(--primary);
+}
+.disclosure {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-16);
+}
+.disclosure summary {
+  min-height: 48px;
+  color: var(--primary);
+  font-weight: 600;
+}
+.preview-label {
+  color: var(--info);
+  background: var(--info-bg);
+  border: 1px solid var(--info);
+  padding: var(--space-12) 20px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 0.6s linear infinite;
+}
+@media (forced-colors: active) {
+  .badge {
+    border: 1px solid CanvasText;
+  }
+}
+.badge {
+  overflow-wrap: anywhere;
+}
+.skeleton-block,
+.skeleton-line {
+  background: var(--subtle);
+}
+.skeleton-line {
+  display: block;
+  height: 20px;
+  width: 80%;
+  border-radius: 6px;
+  margin: var(--space-8) 0;
+}
+.skeleton-row .grow {
+  min-height: 68px;
+}
+.skeleton-info {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}

@@ -1,0 +1,120 @@
+.teacher-header {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  min-height: 80px;
+  padding: var(--space-12) max(var(--page-gutter), calc((100% - var(--content-max)) / 2));
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.brand {
+  color: var(--text);
+  font-size: 1.5rem;
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  text-decoration: none;
+  letter-spacing: -0.04em;
+  white-space: normal;
+  max-width: 100%;
+}
+.brand-mark {
+  color: var(--primary);
+}
+.teacher-header nav {
+  display: flex;
+  gap: var(--space-32);
+  flex: 1;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.teacher-header nav a {
+  position: relative;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--muted);
+  font-weight: 600;
+}
+.teacher-header nav a[aria-current='page'] {
+  color: var(--text);
+}
+.teacher-header nav a[aria-current='page']::after {
+  content: '';
+  height: 4px;
+  border-radius: 4px;
+  background: var(--primary);
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+}
+.account > details > summary {
+  background: var(--subtle);
+  color: var(--text);
+}
+.teacher-main {
+  padding-block: var(--space-24) var(--space-48);
+  min-height: calc(100vh - 160px);
+}
+.breadcrumb {
+  display: flex;
+  gap: var(--space-12);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-24);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.breadcrumb a {
+  color: inherit;
+}
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 12px;
+  padding: var(--space-12);
+  z-index: 100;
+  background: var(--surface-raised);
+}
+.skip-link:focus {
+  top: 12px;
+}
+@media (max-width: 1100px) {
+  .teacher-header {
+    gap: var(--space-24);
+  }
+  .teacher-header nav {
+    gap: var(--space-24);
+  }
+}
+@media (max-width: 959px) {
+  .teacher-header {
+    flex-wrap: wrap;
+    gap: var(--space-12) var(--space-24);
+  }
+  .account {
+    margin-left: auto;
+  }
+  .teacher-header nav {
+    order: 3;
+    flex-basis: 100%;
+  }
+}
+@media (max-width: 639px) {
+  .brand {
+    font-size: 1.25rem;
+  }
+  .account .button {
+    padding: 10px var(--space-12);
+    font-size: 0.875rem;
+  }
+  .teacher-main {
+    padding-block: var(--space-16) var(--space-32);
+  }
+  .teacher-header nav {
+    width: 100%;
+  }
+}
